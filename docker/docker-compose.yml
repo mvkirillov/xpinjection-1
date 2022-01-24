@@ -1,0 +1,15 @@
+version: '3'
+services:
+  xpinjection_db:
+    build: ./postgres
+    container_name: xpinjection_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=xpinjection
+    volumes:
+      - xpinjection_volume:/var/lib/postgresql/data/ # persist data even if container shuts down
+    ports:
+      - "5432:5432"
+volumes:
+  xpinjection_volume: # named volumes can be managed easier using docker-compose

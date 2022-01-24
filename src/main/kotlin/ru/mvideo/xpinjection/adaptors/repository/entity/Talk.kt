@@ -13,7 +13,6 @@ class Talk(
     @Column(name = "description", nullable = false)
     var description: String,
 
-    @Column(name = "author_id", nullable = false)
     @ManyToOne(fetch = LAZY)
     var author: Author,
 

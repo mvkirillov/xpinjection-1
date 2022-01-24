@@ -4,4 +4,16 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+  datasource:
+    username: xpinjection
+    password: myPassword
+    connectionTimeout: 60000
+    maximumPoolSize: 10
+    poolName: xpinjectionPostgresPool
+    url: jdbc:postgresql://localhost:5432/xpinjection
+
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/xpinjection
+    user: xpinjection
+    password: myPassword
 

@@ -1,0 +1,1 @@
+docker volume create xpinjection_volume - создание вольюма для постгреса, выполнить один раз, до запуска docker compose

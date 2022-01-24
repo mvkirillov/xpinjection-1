@@ -5,7 +5,8 @@ import java.time.LocalDate
 class Conference(
     val name: String,
     val topic: String,
-    val date: LocalDate,
+    val fromDate: LocalDate,
+    val toDate: LocalDate,
     val numberParticipants: Long,
     val talks: Set<Talk> = emptySet()
 )

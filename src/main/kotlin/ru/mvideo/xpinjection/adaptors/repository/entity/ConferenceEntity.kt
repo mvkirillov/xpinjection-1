@@ -8,7 +8,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "conference")
-class Conference(
+class ConferenceEntity(
     @NaturalId
     @Column(name = "name", nullable = false)
     val name: String,
@@ -31,7 +31,7 @@ class Conference(
         joinColumns = [JoinColumn(name = "conference_id")],
         inverseJoinColumns = [JoinColumn(name = "talk_id")]
     )
-    var talks: Set<Talk> = emptySet()
+    var talkEntities: Set<TalkEntity> = emptySet()
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "conference_id_seq")
@@ -41,7 +41,7 @@ class Conference(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as Conference
+        other as ConferenceEntity
 
         return name == other.name
     }

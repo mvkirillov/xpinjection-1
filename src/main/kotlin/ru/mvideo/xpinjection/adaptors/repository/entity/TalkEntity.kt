@@ -8,7 +8,7 @@ import javax.persistence.FetchType.LAZY
 
 @Entity
 @Table(name = "talk")
-class Talk(
+class TalkEntity(
     @NaturalId
     @Column(name = "name", nullable = false)
     val name: String,
@@ -17,7 +17,7 @@ class Talk(
     var description: String,
 
     @ManyToOne(fetch = LAZY)
-    var author: Author,
+    var authorEntity: AuthorEntity,
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -29,7 +29,7 @@ class Talk(
         joinColumns = [JoinColumn(name = "talk_id")],
         inverseJoinColumns = [JoinColumn(name = "conference_id")]
     )
-    var conferences: Set<Conference> = emptySet()
+    var conferenceEntities: MutableSet<ConferenceEntity> = mutableSetOf()
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "talk_id_seq")
@@ -39,7 +39,7 @@ class Talk(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as Talk
+        other as TalkEntity
 
         return name == other.name
     }

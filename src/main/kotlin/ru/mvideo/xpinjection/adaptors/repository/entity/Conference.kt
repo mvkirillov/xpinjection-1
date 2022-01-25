@@ -1,14 +1,17 @@
 package ru.mvideo.xpinjection.adaptors.repository.entity
 
 import org.hibernate.Hibernate
+import org.hibernate.annotations.NaturalId
 import java.time.LocalDate
+import java.util.*
 import javax.persistence.*
 
 @Entity
 @Table(name = "conference")
 class Conference(
+    @NaturalId
     @Column(name = "name", nullable = false)
-    var name: String,
+    val name: String,
 
     @Column(name = "topic", nullable = false)
     var topic: String,
@@ -37,11 +40,17 @@ class Conference(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other === null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
         other as Conference
 
-        return id == other.id
+        return name == other.name
     }
 
-    override fun hashCode(): Int = javaClass.hashCode()
+    override fun hashCode(): Int = Objects.hash(name);
+
+    @Override
+    override fun toString(): String {
+        return this::class.simpleName + "(name = $name , id = $id , topic = $topic , fromDate = $fromDate , toDate = $toDate , numberParticipants = $numberParticipants )"
+    }
+
 }

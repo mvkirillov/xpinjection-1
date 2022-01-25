@@ -1,14 +1,17 @@
 package ru.mvideo.xpinjection.adaptors.repository.entity
 
 import org.hibernate.Hibernate
+import org.hibernate.annotations.NaturalId
+import java.util.*
 import javax.persistence.*
 import javax.persistence.FetchType.LAZY
 
 @Entity
 @Table(name = "talk")
 class Talk(
+    @NaturalId
     @Column(name = "name", nullable = false)
-    var name: String,
+    val name: String,
 
     @Column(name = "description", nullable = false)
     var description: String,
@@ -35,13 +38,19 @@ class Talk(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other === null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
         other as Talk
 
-        return id == other.id
+        return name == other.name
     }
 
-    override fun hashCode(): Int = javaClass.hashCode()
+    override fun hashCode(): Int = Objects.hash(name);
+
+    @Override
+    override fun toString(): String {
+        return this::class.simpleName + "(name = $name , id = $id , description = $description , type = $type )"
+    }
+
 }
 
 enum class TalkType {

@@ -4,6 +4,8 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+    serialization:
+      write_dates_as_timestamps: false
   datasource:
     username: xpinjection
     password: myPassword

@@ -10,7 +10,7 @@ import javax.persistence.*
 @Table(name = "conference")
 class ConferenceEntity(
     @NaturalId
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     val name: String,
 
     @Column(name = "topic", nullable = false)

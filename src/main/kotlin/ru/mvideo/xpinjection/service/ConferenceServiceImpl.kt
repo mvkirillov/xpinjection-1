@@ -10,21 +10,30 @@ import ru.mvideo.xpinjection.adaptors.repository.entity.AuthorEntity
 import ru.mvideo.xpinjection.adaptors.repository.entity.ConferenceEntity
 import ru.mvideo.xpinjection.adaptors.repository.entity.TalkEntity
 import ru.mvideo.xpinjection.adaptors.repository.entity.TalkType
+import ru.mvideo.xpinjection.exceptions.ConferenceAlreadyExistsException
 import ru.mvideo.xpinjection.exceptions.ConferenceNotFoundException
 
 @Service
-class ConferenceServiceImpl(val conferenceRepository: ConferenceRepository, val talkRepository: TalkRepository) :
-    ConferenceService {
+class ConferenceServiceImpl(
+    val conferenceRepository: ConferenceRepository,
+    val talkRepository: TalkRepository
+) : ConferenceService {
     override fun addConference(conference: Conference): Long {
-        return conferenceRepository.save(
-            ConferenceEntity(
-                conference.name,
-                conference.topic,
-                conference.fromDate,
-                conference.toDate,
-                conference.numberParticipants
-            )
-        ).id
+        with(conference) {
+            conferenceRepository.findByName(name).ifPresent {
+                throw ConferenceAlreadyExistsException(name)
+            }
+
+            return conferenceRepository.save(
+                ConferenceEntity(
+                    name,
+                    topic,
+                    fromDate,
+                    toDate,
+                    numberParticipants
+                )
+            ).id
+        }
     }
 
     override fun getAllConferences(): List<Conference> {

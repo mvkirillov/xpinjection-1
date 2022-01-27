@@ -11,10 +11,9 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.web.bind.MethodArgumentNotValidException
 import ru.mvideo.xpinjection.adaptors.controllers.ConferenceController
 import ru.mvideo.xpinjection.adaptors.dto.Conference
 import ru.mvideo.xpinjection.exceptions.ConferenceAlreadyExistsException
@@ -58,7 +57,7 @@ class ConferenceControllerTest {
 
     @Test
     fun testValidationNumberOfParticipants() {
-        mockMvc.perform(
+        val result = mockMvc.perform(
             post("/conferences")
                 .content(
                     asJsonString(
@@ -76,7 +75,10 @@ class ConferenceControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isBadRequest)
-
+            .andReturn()
+        val exception = result.resolvedException
+        assert(exception != null)
+        assert(exception is MethodArgumentNotValidException)
     }
 
     private val om = ObjectMapper().findAndRegisterModules()

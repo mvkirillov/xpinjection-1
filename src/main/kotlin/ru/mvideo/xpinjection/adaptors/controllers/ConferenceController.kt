@@ -7,20 +7,20 @@ import ru.mvideo.xpinjection.adaptors.dto.Conference
 import ru.mvideo.xpinjection.adaptors.dto.ConferenceStatus
 import ru.mvideo.xpinjection.adaptors.dto.Talk
 import ru.mvideo.xpinjection.service.ConferenceService
+import javax.validation.Valid
 
 @RestController
 class ConferenceController(
     val conferenceService: ConferenceService
 ) {
 
-    @Validated
     @PostMapping(
         path = ["/conferences"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
         consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun addConference(
-        @RequestBody conference: Conference
+        @Valid @RequestBody conference: Conference
     ): ConferenceStatus {
         return ConferenceStatus(
             conferenceService.addConference(conference)

@@ -1,9 +1,7 @@
 package ru.mvideo.xpinjection.service
 
 import org.springframework.stereotype.Service
-import ru.mvideo.xpinjection.adaptors.dto.Author
-import ru.mvideo.xpinjection.adaptors.dto.Conference
-import ru.mvideo.xpinjection.adaptors.dto.Talk
+import ru.mvideo.xpinjection.adaptors.dto.*
 import ru.mvideo.xpinjection.adaptors.repository.ConferenceRepository
 import ru.mvideo.xpinjection.adaptors.repository.TalkRepository
 import ru.mvideo.xpinjection.adaptors.repository.entity.AuthorEntity
@@ -12,18 +10,26 @@ import ru.mvideo.xpinjection.adaptors.repository.entity.TalkEntity
 import ru.mvideo.xpinjection.adaptors.repository.entity.TalkType
 import ru.mvideo.xpinjection.exceptions.ConferenceAlreadyExistsException
 import ru.mvideo.xpinjection.exceptions.ConferenceNotFoundException
+import ru.mvideo.xpinjection.exceptions.ConferenceWrongSameDatesException
+import javax.transaction.Transactional
 
 @Service
 class ConferenceServiceImpl(
     val conferenceRepository: ConferenceRepository,
     val talkRepository: TalkRepository
 ) : ConferenceService {
-    override fun addConference(conference: Conference): Long {
+
+    override fun addConference(
+        conference: Conference
+    ): Long {
         with(conference) {
             conferenceRepository.findByName(name).ifPresent {
                 throw ConferenceAlreadyExistsException(name)
             }
-
+            // todo надо написать кастомный валидатор дат
+            if (conference.fromDate >= conference.toDate) {
+                throw ConferenceWrongSameDatesException()
+            }
             return conferenceRepository.save(
                 ConferenceEntity(
                     name,
@@ -36,37 +42,58 @@ class ConferenceServiceImpl(
         }
     }
 
-    override fun getAllConferences(): List<Conference> {
-        return conferenceRepository.findAll().map {
-            Conference(
-                id = it.id,
-                name = it.name,
-                topic = it.topic,
-                fromDate = it.fromDate,
-                toDate = it.toDate,
-                numberParticipants = it.numberParticipants
-            )
-        }
+    override fun getAllConferences(): List<ConferenceWithTalks> {
+        return conferenceRepository.findAllWithTalks()
+            .map {
+                ConferenceWithTalks(
+                    id = it.id,
+                    name = it.name,
+                    topic = it.topic,
+                    fromDate = it.fromDate,
+                    toDate = it.toDate,
+                    numberParticipants = it.numberParticipants,
+                    talks = it.talks.mapTo(hashSetOf()) { talkEntity ->
+                        Talk(
+                            name = talkEntity.name,
+                            description = talkEntity.description,
+                            author = Author(talkEntity.author.id, talkEntity.author.name),
+                            type = talkEntity.type.name
+                        )
+                    }
+                )
+            }
     }
 
-    override fun updateConferenceById(conferenceId: Long, conference: Conference): Long {
-        val entity = ConferenceEntity(
-            conference.name,
-            conference.topic,
-            conference.fromDate,
-            conference.toDate,
-            conference.numberParticipants
-        )
-        entity.id = conferenceId
+    @Transactional
+    override fun updateConferenceById(
+        conferenceId: Long,
+        conference: UpdateConferenceDto
+    ): Long {
+        val fromDb = conferenceRepository.findByName(conference.name)
+        if (fromDb.isEmpty) {
+            throw ConferenceNotFoundException(conferenceId)
+        }
+        // todo надо написать кастомный валидатор дат
+        if (conference.fromDate >= conference.toDate) {
+            throw ConferenceWrongSameDatesException()
+        }
+        val conferenceFromDb = fromDb.get()
+
+        with(conference) {
+            conferenceFromDb.topic = this.topic
+            conferenceFromDb.fromDate = this.fromDate
+            conferenceFromDb.toDate = this.toDate
+            conferenceFromDb.numberParticipants = this.numberParticipants
+        }
         return conferenceRepository.save(
-            entity
+            conferenceFromDb
         ).id
     }
 
     override fun addTalkToConference(conferenceId: Long, talk: Talk): Long {
         val conferenceEntity =
             conferenceRepository.findById(conferenceId)
-                .orElseThrow { throw ConferenceNotFoundException("Conference with id $conferenceId not found") }
+                .orElseThrow { throw ConferenceNotFoundException(conferenceId) }
         val authorEntity = AuthorEntity(talk.author.name)
         authorEntity.id = talk.author.id
         val talkEntity = TalkEntity(
@@ -82,7 +109,7 @@ class ConferenceServiceImpl(
 
     override fun getAllTalksForConference(conferenceId: Long): List<Talk> {
         return conferenceRepository.findById(conferenceId)
-            .orElseThrow { throw ConferenceNotFoundException("Conference with id $conferenceId not found") }.talks.toList()
+            .orElseThrow { throw ConferenceNotFoundException(conferenceId) }.talks.toList()
             .map { Talk(it.name, it.description, Author(it.author.id, it.author.name), it.type.toString()) }
     }
 }

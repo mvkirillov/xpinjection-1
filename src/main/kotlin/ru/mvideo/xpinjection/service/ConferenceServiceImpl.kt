@@ -72,7 +72,7 @@ class ConferenceServiceImpl(
         val talkEntity = TalkEntity(
             name = talk.name,
             description = talk.description,
-            authorEntity = authorEntity,
+            author = authorEntity,
             type = TalkType.valueOf(talk.type)
         )
         talkEntity.conferenceEntities.add(conferenceEntity)
@@ -82,7 +82,7 @@ class ConferenceServiceImpl(
 
     override fun getAllTalksForConference(conferenceId: Long): List<Talk> {
         return conferenceRepository.findById(conferenceId)
-            .orElseThrow { throw ConferenceNotFoundException("Conference with id $conferenceId not found") }.talkEntities.toList()
-            .map { Talk(it.name, it.description, Author(it.authorEntity.id, it.authorEntity.name), it.type.toString()) }
+            .orElseThrow { throw ConferenceNotFoundException("Conference with id $conferenceId not found") }.talks.toList()
+            .map { Talk(it.name, it.description, Author(it.author.id, it.author.name), it.type.toString()) }
     }
 }

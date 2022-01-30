@@ -16,8 +16,9 @@ class TalkEntity(
     @Column(name = "description", nullable = false)
     var description: String,
 
+    @JoinColumn(name = "author_id", nullable = false)
     @ManyToOne(fetch = LAZY)
-    var authorEntity: AuthorEntity,
+    var author: AuthorEntity,
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)

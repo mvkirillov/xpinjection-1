@@ -31,7 +31,7 @@ class ConferenceEntity(
         joinColumns = [JoinColumn(name = "conference_id")],
         inverseJoinColumns = [JoinColumn(name = "talk_id")]
     )
-    var talkEntities: Set<TalkEntity> = emptySet()
+    var talks: Set<TalkEntity> = emptySet()
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "conference_id_seq")

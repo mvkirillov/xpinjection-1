@@ -32,6 +32,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("com.h2database:h2")
 }
 
 dependencyManagement {

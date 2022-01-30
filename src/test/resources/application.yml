@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+    serialization:
+      write_dates_as_timestamps: false
+  datasource:
+    username: sa
+    password: sa
+    connectionTimeout: 60000
+    maximumPoolSize: 10
+    poolName: xpinjectionPostgresPool
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+
+  liquibase:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    user: sa
+    password: sa
+

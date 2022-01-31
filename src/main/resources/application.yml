@@ -22,3 +22,8 @@ spring:
     user: xpinjection
     password: myPassword
 
+app:
+  conference:
+    maxAuthorTasksCount: 3
+    timeBeforeConference: 1M
+

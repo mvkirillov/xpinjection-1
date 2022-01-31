@@ -1,22 +1,25 @@
 package ru.mvideo.xpinjection.service
 
 import org.springframework.stereotype.Service
+import ru.mvideo.xpinjection.adaptors.configuration.ConferenceProperties
 import ru.mvideo.xpinjection.adaptors.dto.*
+import ru.mvideo.xpinjection.adaptors.repository.AuthorRepository
 import ru.mvideo.xpinjection.adaptors.repository.ConferenceRepository
 import ru.mvideo.xpinjection.adaptors.repository.TalkRepository
 import ru.mvideo.xpinjection.adaptors.repository.entity.AuthorEntity
 import ru.mvideo.xpinjection.adaptors.repository.entity.ConferenceEntity
 import ru.mvideo.xpinjection.adaptors.repository.entity.TalkEntity
 import ru.mvideo.xpinjection.adaptors.repository.entity.TalkType
-import ru.mvideo.xpinjection.exceptions.ConferenceAlreadyExistsException
-import ru.mvideo.xpinjection.exceptions.ConferenceNotFoundException
-import ru.mvideo.xpinjection.exceptions.ConferenceWrongSameDatesException
+import ru.mvideo.xpinjection.exceptions.*
+import java.time.LocalDate
 import javax.transaction.Transactional
 
 @Service
 class ConferenceServiceImpl(
     val conferenceRepository: ConferenceRepository,
-    val talkRepository: TalkRepository
+    val talkRepository: TalkRepository,
+    val conferenceProperties: ConferenceProperties,
+    val authorRepository: AuthorRepository
 ) : ConferenceService {
 
     override fun addConference(
@@ -91,9 +94,19 @@ class ConferenceServiceImpl(
     }
 
     override fun addTalkToConference(conferenceId: Long, talk: Talk): Long {
+
         val conferenceEntity =
             conferenceRepository.findById(conferenceId)
                 .orElseThrow { throw ConferenceNotFoundException(conferenceId) }
+
+        if(LocalDate.now().isAfter(conferenceEntity.fromDate.minus(conferenceProperties.timeBeforeConference))){
+            throw TasksRegistrationOutOfTimeException(conferenceEntity.name, conferenceEntity.fromDate, conferenceEntity.fromDate.minus(conferenceProperties.timeBeforeConference))
+        }
+
+        if(!authorRepository.existsById(talk.author.id)){
+            throw AuthorNotFoundException(talk.author.id)
+        }
+
         val authorEntity = AuthorEntity(talk.author.name)
         authorEntity.id = talk.author.id
         val talkEntity = TalkEntity(
@@ -102,7 +115,16 @@ class ConferenceServiceImpl(
             author = authorEntity,
             type = TalkType.valueOf(talk.type)
         )
+
         talkEntity.conferenceEntities.add(conferenceEntity)
+        if(talkRepository.countByConferenceIdAndName(conferenceId, talkEntity.name) != 0L) {
+            throw TaskAlreadyExistsException(talkEntity.name)
+        }
+
+        if (talkRepository.countByAuthorAndConference(authorEntity.name, conferenceId) >= conferenceProperties.maxAuthorTasksCount){
+            throw TasksInConferenceOutOfLimitException(authorEntity.name, conferenceProperties.maxAuthorTasksCount)
+        }
+
         talkRepository.save(talkEntity)
         return conferenceEntity.id
     }

@@ -5,8 +5,10 @@ import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 
 class Conference(
+    //выпилить
     val id: Long?,
     @field:NotBlank
+    // length
     val name: String,
     @field:NotBlank
     val topic: String,

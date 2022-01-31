@@ -1,5 +1,6 @@
 package ru.mvideo.xpinjection.service
 
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import ru.mvideo.xpinjection.adaptors.configuration.ConferenceProperties
 import ru.mvideo.xpinjection.adaptors.dto.*
@@ -28,20 +29,25 @@ class ConferenceServiceImpl(
         with(conference) {
             conferenceRepository.findByName(name).ifPresent {
                 throw ConferenceAlreadyExistsException(name)
-            }
+            } // параллельная обработка
             // todo надо написать кастомный валидатор дат
             if (conference.fromDate >= conference.toDate) {
                 throw ConferenceWrongSameDatesException()
             }
-            return conferenceRepository.save(
-                ConferenceEntity(
-                    name,
-                    topic,
-                    fromDate,
-                    toDate,
-                    numberParticipants
-                )
-            ).id
+            return try {
+                conferenceRepository.save(
+                    ConferenceEntity(
+                        name,
+                        topic,
+                        fromDate,
+                        toDate,
+                        numberParticipants
+                    )
+                ).id
+            } catch (ex: DataIntegrityViolationException) { // check
+                throw ConferenceAlreadyExistsException(name)
+            }
+
         }
     }
 
@@ -117,7 +123,7 @@ class ConferenceServiceImpl(
         )
 
         talkEntity.conferenceEntities.add(conferenceEntity)
-        if(talkRepository.countByConferenceIdAndName(conferenceId, talkEntity.name) != 0L) {
+        if(talkRepository.countByNameAndConferenceEntitiesId(talkEntity.name,conferenceId) != 0L) {
             throw TaskAlreadyExistsException(talkEntity.name)
         }
 

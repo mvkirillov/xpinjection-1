@@ -7,6 +7,10 @@ import ru.mvideo.xpinjection.adaptors.dto.*
 import ru.mvideo.xpinjection.service.ConferenceService
 import javax.validation.Valid
 
+@RequestMapping(
+    produces = [MediaType.APPLICATION_JSON_VALUE],
+    consumes = [MediaType.APPLICATION_JSON_VALUE]
+)
 @RestController
 class ConferenceController(
     val conferenceService: ConferenceService
@@ -14,8 +18,6 @@ class ConferenceController(
 
     @PostMapping(
         path = ["/conferences"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun addConference(
         @Valid @RequestBody conference: Conference
@@ -27,8 +29,6 @@ class ConferenceController(
 
     @GetMapping(
         path = ["/conferences"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun getConferences(): List<ConferenceWithTalks> {
         return conferenceService.getAllConferences()
@@ -36,8 +36,6 @@ class ConferenceController(
 
     @PutMapping(
         path = ["/conferences/{conference_id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun updateConference(
         @PathVariable("conference_id") conferenceId: Long,
@@ -54,8 +52,6 @@ class ConferenceController(
     @Validated
     @PostMapping(
         path = ["/conferences/{conference_id}/talks"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun addTalkToConference(
         @PathVariable("conference_id") conferenceId: Long,
@@ -81,3 +77,5 @@ class ConferenceController(
         return conferenceService.getAllTalksForConference(conferenceId)
     }
 }
+
+class ConferenceIdContainer(val id: Long)

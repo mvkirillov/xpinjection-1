@@ -9,9 +9,11 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import ru.mvideo.xpinjection.adaptors.configuration.ConferenceProperties
 import ru.mvideo.xpinjection.adaptors.dto.Author
 import ru.mvideo.xpinjection.adaptors.dto.Conference
 import ru.mvideo.xpinjection.adaptors.dto.Talk
+import ru.mvideo.xpinjection.adaptors.repository.AuthorRepository
 import ru.mvideo.xpinjection.adaptors.repository.ConferenceRepository
 import ru.mvideo.xpinjection.adaptors.repository.TalkRepository
 import ru.mvideo.xpinjection.adaptors.repository.entity.AuthorEntity
@@ -33,6 +35,12 @@ class ConferenceServiceTest {
 
     @Mock
     lateinit var talksRepo: TalkRepository
+
+    @Mock
+    lateinit var authorRepo: AuthorRepository
+
+    @Mock
+    lateinit var conferenceProperties: ConferenceProperties
 
     @Test
     fun addConferenceThrowExceptionIfConferenceAlreadyExists() {

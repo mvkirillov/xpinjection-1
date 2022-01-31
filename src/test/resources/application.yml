@@ -23,3 +23,7 @@ spring:
     user: sa
     password: sa
 
+app:
+  conference:
+    maxAuthorTasksCount: 3
+    timeBeforeConference: 1M

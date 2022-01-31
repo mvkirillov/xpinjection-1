@@ -8,6 +8,6 @@ import java.time.Period
 @ConfigurationProperties(prefix = "app.conference")
 @Component
 class ConferenceProperties {
-    val maxAuthorTasksCount: Int = 0
-    val timeBeforeConference: Period = Period.ZERO
+    var maxAuthorTasksCount: Int = 0
+    var timeBeforeConference: Period = Period.ZERO
 }

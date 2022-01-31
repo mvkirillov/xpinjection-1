@@ -7,7 +7,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "author")
-class Author(
+class AuthorEntity(
     @NaturalId(mutable = false)
     @Column(name = "name", nullable = false)
     val name: String
@@ -21,7 +21,7 @@ class Author(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as Author
+        other as AuthorEntity
 
         return name == other.name
     }

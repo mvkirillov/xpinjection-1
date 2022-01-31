@@ -5,4 +5,91 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
 
+    <changeSet id="1643541723323-1" author="kirillov (generated)">
+        <createSequence incrementBy="1" sequenceName="author_id_seq" startValue="1"/>
+    </changeSet>
+    <changeSet id="1643541723323-2" author="kirillov (generated)">
+        <createSequence incrementBy="1" sequenceName="conference_id_seq" startValue="1"/>
+    </changeSet>
+    <changeSet id="1643541723323-3" author="kirillov (generated)">
+        <createSequence incrementBy="1" sequenceName="talk_id_seq" startValue="1"/>
+    </changeSet>
+    <changeSet id="1643541723323-4" author="kirillov (generated)">
+        <createTable tableName="author">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_author"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1643541723323-5" author="kirillov (generated)">
+        <createTable tableName="conference">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_conference"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number_participants" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1643541723323-6" author="kirillov (generated)">
+        <createTable tableName="talk">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_talk"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1643541723323-7" author="kirillov (generated)">
+        <createTable tableName="talk_at_conference">
+            <column name="conference_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_talk_at_conference"/>
+            </column>
+            <column name="talk_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_talk_at_conference"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1643541723323-8" author="kirillov (generated)">
+        <addUniqueConstraint columnNames="name" constraintName="uc_conference_name" tableName="conference"/>
+    </changeSet>
+    <changeSet id="1643541723323-10" author="kirillov (generated)">
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="talk" constraintName="FK_TALK_ON_AUTHOR"
+                                 referencedColumnNames="id" referencedTableName="author"/>
+    </changeSet>
+    <changeSet id="1643541723323-11" author="kirillov (generated)">
+        <addForeignKeyConstraint baseColumnNames="conference_id" baseTableName="talk_at_conference"
+                                 constraintName="fk_talatcon_on_conference_entity" referencedColumnNames="id"
+                                 referencedTableName="conference"/>
+    </changeSet>
+    <changeSet id="1643541723323-12" author="kirillov (generated)">
+        <addForeignKeyConstraint baseColumnNames="talk_id" baseTableName="talk_at_conference"
+                                 constraintName="fk_talatcon_on_talk_entity" referencedColumnNames="id"
+                                 referencedTableName="talk"/>
+    </changeSet>
 </databaseChangeLog>
